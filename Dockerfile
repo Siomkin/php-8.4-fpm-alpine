@@ -14,10 +14,17 @@ RUN apk add freetype-dev libjpeg-turbo-dev libpng-dev jpeg-dev libwebp-dev
 
 RUN apk add supervisor bash curl unzip git
 
+# RUN apk add --update linux-headers
+# RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+#     && pecl install xdebug \
+#     && docker-php-ext-enable xdebug \
+#     && apk del -f .build-deps
 RUN apk add --update linux-headers
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
+    # Manually download and install Xdebug compatible with PHP 8.4
+    && mkdir -p /usr/src/php/ext/xdebug \
+    && curl -fsSL https://xdebug.org/files/xdebug-3.4.0alpha1.tgz | tar xvz -C /usr/src/php/ext/xdebug --strip 1 \
+    && docker-php-ext-install xdebug \
     && apk del -f .build-deps
 
 # Install extensions
