@@ -20,16 +20,25 @@ RUN apk add supervisor bash curl unzip git
 #     && docker-php-ext-enable xdebug \
 #     && apk del -f .build-deps
 RUN apk add --update linux-headers
+
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     # Manually download and install Xdebug compatible with PHP 8.4
     && mkdir -p /usr/src/php/ext/xdebug \
     && curl -fsSL https://xdebug.org/files/xdebug-3.4.0alpha1.tgz | tar xvz -C /usr/src/php/ext/xdebug --strip 1 \
     && docker-php-ext-install xdebug \
-    && apk del -f .build-deps
+    && git clone https://github.com/phpredis/phpredis.git /usr/src/php/ext/redis \
+    && cd /usr/src/php/ext/redis \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && docker-php-ext-enable redis \
+    && apk del .build-deps
 
 # Install extensions
 RUN chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions zip opcache pdo_mysql pdo_pgsql mysqli bcmath sockets xsl exif intl gmp pcntl redis gd
+    install-php-extensions zip opcache pdo_mysql pdo_pgsql mysqli bcmath sockets xsl exif intl gmp pcntl gd
+
 
 #RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp && docker-php-ext-install gd
 
