@@ -1,4 +1,4 @@
-FROM php:8.4.0alpha1-fpm-alpine
+FROM php:8.4.1-fpm-alpine
 
 ENV TZ=UTC
 
@@ -24,7 +24,7 @@ RUN apk add --update linux-headers
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     # Manually download and install Xdebug compatible with PHP 8.4
     && mkdir -p /usr/src/php/ext/xdebug \
-    && curl -fsSL https://xdebug.org/files/xdebug-3.4.0alpha1.tgz | tar xvz -C /usr/src/php/ext/xdebug --strip 1 \
+    && curl -fsSL https://xdebug.org/files/xdebug-3.4.0beta1.tgz | tar xvz -C /usr/src/php/ext/xdebug --strip 1 \
     && docker-php-ext-install xdebug \
     && git clone https://github.com/phpredis/phpredis.git /usr/src/php/ext/redis \
     && cd /usr/src/php/ext/redis \
